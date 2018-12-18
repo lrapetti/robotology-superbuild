@@ -13,18 +13,18 @@ stages:
   - test # Default stage with job matrix
   - osx
 
-compiler:
-  - gcc
-  - clang
+# compiler:
+#   - gcc
+#   - clang
 
-env:
-  global:
-    - TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
-  matrix:
-    - TRAVIS_BUILD_TYPE="Release" UBUNTU="xenial", ROBOTOLOGY_ENABLE_DYNAMICS=TRUE
-    - TRAVIS_BUILD_TYPE="Debug" UBUNTU="xenial", ROBOTOLOGY_ENABLE_DYNAMICS=TRUE
-    - TRAVIS_BUILD_TYPE="Release" UBUNTU="bionic", ROBOTOLOGY_ENABLE_DYNAMICS=TRUE
-    - TRAVIS_BUILD_TYPE="Debug" UBUNTU="bionic", ROBOTOLOGY_ENABLE_DYNAMICS=TRUE
+# env:
+#   global:
+#     - TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
+#   matrix:
+#     - TRAVIS_BUILD_TYPE="Release" UBUNTU="xenial", ROBOTOLOGY_ENABLE_DYNAMICS=TRUE
+#     - TRAVIS_BUILD_TYPE="Debug" UBUNTU="xenial", ROBOTOLOGY_ENABLE_DYNAMICS=TRUE
+#     - TRAVIS_BUILD_TYPE="Release" UBUNTU="bionic", ROBOTOLOGY_ENABLE_DYNAMICS=TRUE
+#     - TRAVIS_BUILD_TYPE="Debug" UBUNTU="bionic", ROBOTOLOGY_ENABLE_DYNAMICS=TRUE
 
 # ===================
 # STAGE: test (linux)
@@ -53,14 +53,14 @@ script:
 
 stage_osx:
   install: &osx_install
+    - export PATH="/usr/local/opt/ccache/libexec:$PATH"
+    - export ROBOTOLOGY_ENABLE_DYNAMICS=FALSE
+    - export Qt5_DIR=/usr/local/opt/qt5/lib/cmake/Qt5
     # Setup ccache
     - brew update
     - brew install ccache
-    - export PATH="/usr/local/opt/ccache/libexec:$PATH"
-    - export ROBOTOLOGY_ENABLE_DYNAMICS=FALSE
     # Install dependencies available from Homebrew/core
     - brew install ace asio eigen boost tinyxml swig qt5 gsl pkg-config jpeg sqlite tinyxml
-    - export Qt5_DIR=/usr/local/opt/qt5/lib/cmake/Qt5
     # Workaround for https://github.com/travis-ci/travis-ci/issues/8826
     - brew cask uninstall oclint
     # Install Gazebo
@@ -81,6 +81,11 @@ stage_osx:
 
 jobs:
   include:
+    # ===================
+    # STAGE: test (linux)
+    # ===================
+    - stage: test
+      if: env(DUMMYVAR) is present
     # ---------
     # STAGE OSX
     # ---------
@@ -99,12 +104,12 @@ jobs:
         TRAVIS_CMAKE_GENERATOR="Xcode"
         TRAVIS_BUILD_TYPE="Debug"
 # Disabled for now
-#    - <<: *osx_template
-#      script: *osx_script
-#      compiler: clang
-#      env:
-#        TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
-#        TRAVIS_BUILD_TYPE="Debug"
+   # - <<: *osx_template
+   #   script: *osx_script
+   #   compiler: clang
+   #   env:
+   #     TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
+   #     TRAVIS_BUILD_TYPE="Debug"
 
 
 notifications:
