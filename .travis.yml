@@ -13,10 +13,9 @@ stages:
   - test # Default stage with job matrix
   - osx
 
-compiler:
-  - gcc
-  - clang
-
+# compiler:
+#   - gcc
+#   - clang
 
 # env:
 #   global:
@@ -55,18 +54,18 @@ script:
 stage_osx:
   install: &osx_install
     # Setup ccache
-    - brew update
-    - brew install ccache
+    # - brew update
+    # - brew install ccache
     - export PATH="/usr/local/opt/ccache/libexec:$PATH"
     - export ROBOTOLOGY_ENABLE_DYNAMICS=FALSE
     # Install dependencies available from Homebrew/core
-    - brew install ace asio eigen tinyxml swig qt5 gsl pkg-config jpeg tinyxml
+    # - brew install ace asio eigen tinyxml swig qt5 gsl pkg-config jpeg tinyxml
     - export Qt5_DIR=/usr/local/opt/qt5/lib/cmake/Qt5
     # Workaround for https://github.com/travis-ci/travis-ci/issues/8826
     # - brew cask uninstall oclint
     # Install Gazebo
-    - brew tap osrf/simulation
-    - brew install gazebo9
+    # - brew tap osrf/simulation
+    # - brew install gazebo9
     # Install beautifier for Xcode output 
     - gem install xcpretty-travis-formatter
   script: &osx_script
@@ -102,6 +101,24 @@ jobs:
       after_failure: skip
       after_success: skip
       after_script: skip
+      addons:
+        homebrew:
+          taps:
+            - osrf/simulation
+          packages:
+            - ccache
+            - ace
+            - asio
+            - eigen
+            - tinyxml
+            - swig
+            - qt5
+            - gsl
+            - pkg-config
+            - jpeg
+            - tinyxml
+            - gazebo9
+          update: true
       env:
         TRAVIS_CMAKE_GENERATOR="Xcode"
         TRAVIS_BUILD_TYPE="Debug"
